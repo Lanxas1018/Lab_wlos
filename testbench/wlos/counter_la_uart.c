@@ -121,7 +121,16 @@ void main()
 	reg_la1_oenb = reg_la1_iena = 0xFFFFFFFF;    // [63:32]
 	reg_la2_oenb = reg_la2_iena = 0x00000000;    // [95:64]
 	reg_la3_oenb = reg_la3_iena = 0x00000000;    // [127:96]
-
+	
+	#ifdef USER_PROJ_IRQ0_EN	
+	// unmask USER_IRQ_0_INTERRUPT
+	mask = irq_getmask();
+	mask |= 1 << USER_IRQ_0_INTERRUPT; // USER_IRQ_0_INTERRUPT = 2
+	irq_setmask(mask);
+	// enable user_irq_0_ev_enable
+	user_irq_0_ev_enable_write(1);	
+	#endif
+	
 	// Flag start of the test 
 	reg_mprj_datal = 0xAB400000;
 
@@ -142,6 +151,12 @@ void main()
 	// Matrix multiplication
 	int *tmp = matmul();
 	reg_mprj_datal = *tmp << 16;
+	
+	
+	/*int cnt_delay = 0;
+	while(cnt_delay < 100000)
+		cnt_delay ++;*/
+	
 	reg_mprj_datal = *(tmp+1) << 16;
 	reg_mprj_datal = *(tmp+2) << 16;
 	reg_mprj_datal = *(tmp+3) << 16;
@@ -149,6 +164,10 @@ void main()
 	// Quick sorting
 	int* tmp2 = qsort();
 	reg_mprj_datal = *tmp2 << 16;
+	
+	/*cnt_delay = 0;
+	while(cnt_delay < 100000)
+		cnt_delay ++;*/
 	reg_mprj_datal = *(tmp2+1) << 16;
 	reg_mprj_datal = *(tmp2+2) << 16;
 	reg_mprj_datal = *(tmp2+3) << 16;
@@ -162,6 +181,11 @@ void main()
 	// Fir filter
 	int* tmp3 = fir();
 	reg_mprj_datal = *tmp3 << 16;
+	
+	/*cnt_delay = 0;
+	while(cnt_delay < 100000)
+		cnt_delay ++;*/
+	
 	reg_mprj_datal = *(tmp3+1) << 16;
 	reg_mprj_datal = *(tmp3+2) << 16;
 	reg_mprj_datal = *(tmp3+3) << 16;
@@ -175,13 +199,5 @@ void main()
 
 	reg_mprj_datal = 0xAB510000;
 
-#ifdef USER_PROJ_IRQ0_EN	
-	// unmask USER_IRQ_0_INTERRUPT
-	mask = irq_getmask();
-	mask |= 1 << USER_IRQ_0_INTERRUPT; // USER_IRQ_0_INTERRUPT = 2
-	irq_setmask(mask);
-	// enable user_irq_0_ev_enable
-	user_irq_0_ev_enable_write(1);	
-#endif
 }
 

@@ -159,6 +159,25 @@ module uart_tb;
 	end
 
 	initial begin
+
+		fork
+			send_data_2;
+			checkcheckbit;
+		join
+		
+		//wait(checkbits == 61);
+		//send_data_1;
+		//wait(checkbits == 15);
+		//#10000;
+		//$display("LA Test 1 passed");
+
+		wait(checkbits == 16'hAB51);
+		$display("checkbits = AB51");
+		$display("LA Test 1 passed");
+		//$finish;
+	end
+	
+	task checkcheckbit; begin
 		wait(checkbits == 16'hAB40);
 		$display("LA Test 1 started");
 
@@ -217,18 +236,7 @@ module uart_tb;
 		$display("Call function fir() in User Project BRAM  return value passed, 0x%x", checkbits);
 		wait(checkbits == 16'h044a);		
 		$display("Call function fir() in User Project BRAM  return value passed, 0x%x", checkbits);
-
-		send_data_2;
-		//wait(checkbits == 61);
-		//send_data_1;
-		//wait(checkbits == 15);
-		//#10000;
-		//$display("LA Test 1 passed");
-
-		//wait(checkbits == 16'hAB51);
-		//$display("LA Test 1 passed");
-		//$finish;		
-	end
+	end endtask
 
 	task send_data_1;begin
 		@(posedge clock);
@@ -250,7 +258,7 @@ module uart_tb;
 		#50;
 		wait(!tx_busy);
 		tx_start = 0;
-		$display("tx complete 2");
+		$display("tx complete 2,   time is %t", $time);
 		
 	end endtask
 
